@@ -6,12 +6,7 @@ output: html_document
 ---
 
 ```{r load-packages, message=FALSE}
-library("dplyr")
-library ("ggplot2")
-library ("stringr")
-library ("plotly")
-library("leaflet")
-library("rjson")
+source("../source/analysis.R")
 ```
 
 ```{r load data}
@@ -27,110 +22,49 @@ Question:
 5, What is the standard division of the aapi population in jail？
 
 The variable that I choose is the population that Asian American / Pacific Islander people are in jail. The unit is 0.01, so the number is 100 smaller than the true number of people in jail. I also ask for the mean of this value, since the mean can tell us what is the average number of people that are in jail in all these years. The mean is about 1.98, this should be 198 people in the real world which is not a huge number and means near 200 Asian American / Pacific Islander people may be in jail every year. I also ask for the year that has max and min population. I have found that for the max value, there is only 1 year. But for the min value which is 0, there are many possible years and the years have repeated. So I have to find unique years. I also find the changes in population in recent 10 years. Since the data is in a really early time I do not think they can represent the thought and actions of people in recent times. So I want to see what will be the changes in these 10 years and how can they change. For the std. dev, this can show us how is the data changes. Whether is data is stable or not. We can see the SD is 14.441 which for me I think the data is not stable. 
+Actually, not on AAPI people have been observed. I have also find the same relation between black and total population. I can see that the change between 2008 and 2018 is always positive. This means there are more people in jail in 2008 than 2018. I think this is a huge change to all races since this change means people are less likely to get into troubles. but still we can see by the changes in 10 year and mean value for people in jail that different race of people may have different result. Seems like AAPI people are having less population in jail. 
 
 
 ```{r intro}
 # the average value of aapi population in jail
-mean_aapi_jail_pop <- mean(incarceration$aapi_jail_pop,na.rm = TRUE)
+mean_aapi_jail_pop
 
 # when is the max of the value of aapi population in jail
-max_aapi_jail_pop <- max(incarceration$aapi_jail_pop,na.rm = TRUE)
-time_max_aapi_jail_pop <- incarceration%>%
-  filter(aapi_jail_pop == max_aapi_jail_pop)%>%
-  pull(year)
+time_max_aapi_jail_pop
 
 # when is the min of the value of aapi population in jail
-min_aapi_jail_pop <- min(incarceration$aapi_jail_pop,na.rm = TRUE)
-time_min_aapi_jail_pop_base <- incarceration%>%
-  filter(aapi_jail_pop == min_aapi_jail_pop)%>%
-  pull(year)
-time_min_aapi_jail_pop <- unique(time_min_aapi_jail_pop_base)
+time_min_aapi_jail_pop
 
 # the changes of the value of aapi population in jail from 2008-2018
-aapi_pop_10 <- incarceration %>%
-  filter(year >= 2008 & year <= 2018)
-max_aapi_pop_10 <- max(aapi_pop_10$aapi_jail_pop,na.rm = TRUE)
-min_aapi_pop_10 <- min(aapi_pop_10$aapi_jail_pop,na.rm = TRUE)
-
-change_aapi_jail_pop <- max_aapi_pop_10 - min_aapi_pop_10
+change_aapi_jail_pop
 
 # the std. dev of the value of aapi population from in jail
-SD_aapi_jail_pop <- sd(incarceration$aapi_jail_pop,na.rm = TRUE)
+SD_aapi_jail_pop 
 ```
 
 ### **Trends over time chart**
 
-For this plot, I have chosen the relation between time and the white people population in jail. Because I have chosen the Asian American / Pacific Islander people. Due to the questions has some connection about races. I choose the variable to be different races. I have plotted directly on all white people in jail for the west region, but the diagrams show that there is a large gap with 0 people in jail for the nearly first half of the diagram. Also, I want to learn the recent values which are more representative, so I have set the time range to be between 2000-2018. Also, I choose column plot because it can show directly how the numbers changes in different years. We can see there is a regular curve and include 2 peaks in the graph which is 2004 and 2017.  
+For this plot, I have chosen the relation between time and the white people population in jail. Because I have chosen the Asian American / Pacific Islander people. Due to the questions has some connection about races. I choose the variable to be different races. I have plotted directly on all white people in jail for the king county, but the diagrams show that there is a large gap with 0 people in jail for the nearly first half of the diagram at my first try on the graph, so I have restricted the time range between 2008 to 2018. Also, I want to learn the recent values which are more representative, so I have set the time range to be between 2008 - 2018. I also find there are actually 2 king county in US, so I decide to divide that and show the difference. I choose line plot because it can show directly how the numbers changes in different years. We can see there is a regular curve and include 2 peaks in the graph which is 2014 and 2017 for WA king county and the population drops at 2014 and 2016. There might be more peaks before 2008 by the trend. There are huge difference between WA and TX. For WA the population is always high and much higher than TA. I can see peaks clearly for WA but not for TX. This difference is really interesting.
 
 ```{r Trends over time chart}
-incarceration_NA <- incarceration %>%
-  filter(na.rm = TRUE, 
-         year >= 2000 & year<=2018,
-         region == "West")
-hist <- ggplot(incarceration_NA) +
-  geom_col(mapping = aes(x = year, y = white_jail_pop), position = "dodge") +
-  labs(
-    title = "white people population in jail depends on year in west of the country",
-    x = "time in year",
-    y = "white people population in jail",
-  )
 ggplotly(hist)
 ```
 
 ### **Variable comparison chart**
 
-For this plot, I have chosen the relation between black people population in jail and white people population in jail. Also, I have shown the year by color in the graph. For lighter colors, the year is more recent. The reason I choose these two data is that I have the relation between time and white people in jail from the upper question. I think comparing with white and black with white's trend will be easier to see. I use scatter polt since this can show how the relation is distributed. As we can see that most of the point is at the left down corner which means all population is low. Connecting with the upper graph. We can see for the point the white population is high, the year is always 2017 and 2004 or around them. This is really important that tells us what may be the graph for black people and time will be having peaks at or around 2001 and 2014. We can gain this relation without displaying the graph which is convenient. 
+For this plot, I have chosen the relation between black people population in jail and white people population in jail. Also, I have shown the year by color in the graph. For lighter colors, the year is more recent. The reason I choose these two data is that I have the relation between time and white people in jail from the upper question. I think comparing with white and black with white's trend will be easier to see. I use scatter plot since this can show how the relation is distributed. As we can see that most of the point is at the right up corner which means all population is high in most years between 2008 and 2018. Since the points are placed on the diagonal, I think we can say that white and black people are having similar populations at between 2008 and 2018. Or they will have points at place where have high white and low black etc. We can see at the down corner(low white population), the years for those point is 2011,2009,2018. Campared to upper graph, 2018 and 2011 are similar to the trend presented upper which means population in king county is having similar trend that total population in all counties.
+
 
 ```{r Variable comparison chart}
-scatter <- ggplot(incarceration_NA) +
-  geom_point(mapping = aes(x = black_jail_pop, y = white_jail_pop, color = year)) +
-  labs(
-    title = "white people population and black people population in jail in west region realation",
-    x = "black people population in jail in west region",
-    y = "white people population in jail in west region",
-  )
 ggplotly(scatter)
 ```
 
 ### **Map**
 
-For this plot, I have shown the map for the US and it contains the black population in jail in the year of 2018. I want to see the distribution of the population ins 2018 with different locations. I have used white and black people in the upper question and white for the first graph, so I decide to use the black population in jail this time. I made the map interactive which means people can see the fips while seeing the population at the same time. This can help us to see the location and the population at the same time. Maybe there will be a relationship between location and population. I also use the darkness of the color to show the amount of population, with lighter color the population will be larger. From the map, we can see that the place has a large population is not that much. There are only a few of those places. 
+For this plot, I have shown the map for the US and it contains the black population in jail in the year of 2018. I want to see the distribution of the population ins 2018 with different locations. I have used white and black people in the upper question and white for the first graph, so I decide to use the black population in jail this time. The color of the map have shown the number of population in that area. The lighter the color is, the more population are in jail. For the grey part, the data set just do not have the related data. I can see for places by the west south part. The color is lighter. For they part in middle and east, the color is darker which show there are less population in jail. I think this will happen to be related to the population in that state. Since it is sure that for more population, they will have more chance that more people are in jail. 
 
 ```{r Map}
-url <- 'https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json'
-counties <- rjson::fromJSON(file=url)
-
-incarceration_2018 <- incarceration %>%
-  filter(na.rm = TRUE, 
-         year==2018)
-
-g <- list(
-  scope = 'usa',
-  projection = list(type = 'albers usa'),
-  showlakes = TRUE,
-  lakecolor = toRGB('white')
-)
-
-fig <- plot_ly()
-fig <- fig %>% add_trace(
-  type="choropleth",
-  geojson=counties,
-  locations = incarceration_2018$fips,
-  z=incarceration_2018$black_jail_pop,
-  colorscale="Viridis",
-  marker=list(line=list(
-    width=0)
-  )
-)
-fig <- fig %>% colorbar(title = "population black people in jail in 2018")
-fig <- fig %>% layout(
-  title = "2018 distribution of black population in jail"
-)
-fig <- fig %>% layout(
-  geo = g
-)
-
-fig
+map
 ```
 
 
