@@ -58,11 +58,12 @@ time_max_aapi_jail_pop <- incarceration%>%
   filter(aapi_jail_pop == max_aapi_jail_pop)%>%
   pull(year)
 
-# when is the min of the value of aapi population in jail
+# when is the min of the value of aapi population in jail and How many year is that
 min_aapi_jail_pop <- min(incarceration$aapi_jail_pop,na.rm = TRUE)
 time_min_aapi_jail_pop <- incarceration%>%
   filter(aapi_jail_pop == min_aapi_jail_pop)%>%
   pull(year)
+time_range <- length(time_min_aapi_jail_pop)
 
 time_min_aapi_jail_pop_base <- incarceration%>%
   filter(aapi_jail_pop == min_aapi_jail_pop)%>%
